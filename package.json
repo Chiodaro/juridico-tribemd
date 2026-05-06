@@ -1,0 +1,6 @@
+{
+  "name": "juridico-tribemd",
+  "version": "1.0.0",
+  "description": "Portal de Demandas Jurídicas — TribeMD",
+  "engines": { "node": ">=18" }
+}
