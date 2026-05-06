@@ -2,9 +2,6 @@
   publish = "."
   command = "echo done"
 
-[functions]
-  timeout = 26
-
 [[headers]]
   for = "/*"
   [headers.values]
