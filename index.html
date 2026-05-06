@@ -647,7 +647,7 @@ async function callAPI({ name, date, deadline, demand, desc, fc, ft, fn }) {
   else if (fc && ft === 'text') { content = ut + '\n\nCONTEÚDO DO DOCUMENTO:\n' + fc; }
   else { content = ut; }
 
-  const payload = { model: 'claude-sonnet-4-20250514', max_tokens: 8000, system: buildSys(demand), messages: [{ role: 'user', content }] };
+  const payload = { model: 'claude-sonnet-4-6', max_tokens: 8000, system: buildSys(demand), messages: [{ role: 'user', content }] };
 
   // Use Netlify function as proxy
   const r = await fetch('/.netlify/functions/juridico', {
