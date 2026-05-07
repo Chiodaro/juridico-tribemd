@@ -248,7 +248,7 @@ function parseResponse(raw){
 }
 
 async function callClaude(key,formData,detailed){
-  const cr=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:detailed?4000:1500,system:buildSys(formData.demand,detailed),messages:buildMessages(formData,detailed)})});
+  const cr=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:detailed?4000:2500,system:buildSys(formData.demand,detailed),messages:buildMessages(formData,detailed)})});
   const cdata=await cr.json();
   if(!cr.ok)throw new Error((cdata.error&&cdata.error.message)||'Erro Claude API');
   const raw=cdata.content.filter(b=>b.type==='text').map(b=>b.text).join('');
