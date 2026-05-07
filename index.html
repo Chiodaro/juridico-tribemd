@@ -330,8 +330,10 @@ async function processRequest(id, btn) {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Password': S.adminPwd },
       body: JSON.stringify({ id })
     });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error || 'Erro ao processar');
+    const txt = await r.text();
+let data;
+try { data = JSON.parse(txt); } catch(e) { throw new Error('Resposta: ' + txt.slice(0,200)); }
+if (!r.ok) throw new Error(data.error || 'Erro ao processar');
     _requests[id] = data.response;
     await loadRequests();
   } catch(e) { showErr('adminError', 'Erro ao processar: ' + e.message); btn.disabled = false; btn.textContent = '▶ Processar com IA'; }
