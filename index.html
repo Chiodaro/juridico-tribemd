@@ -364,8 +364,26 @@ async function processRequest(id, btn) {
     if (!cr.ok) throw new Error((cdata.error && cdata.error.message) || 'Erro Claude API');
     const raw = cdata.content.filter(b => b.type === 'text').map(b => b.text).join('');
     let parsed;
-    try { parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()); }
-    catch(e) { const m = raw.match(/\{[\s\S]*\}/); if (!m) throw new Error('JSON invalido'); parsed = JSON.parse(m[0]); }
+    try {
+      const clean = raw.replace(/^```json\s*/i,'').replace(/```\s*$/i,'').trim();
+      parsed = JSON.parse(clean);
+    } catch(e1) {
+      try {
+        const m = raw.match(/\{[\s\S]*\}/);
+        if (!m) throw new Error('sem JSON');
+        const fixed = m[0]
+          .replace(/[\u0000-\u001F\u007F]/g, ' ')
+          .replace(/,\s*([}\]])/g, '$1')
+          .replace(/([}\]])\s*([{[])/g, '$1,$2');
+        parsed = JSON.parse(fixed);
+      } catch(e2) {
+        parsed = {
+          document_title: 'RESPOSTA JURIDICA',
+          sections: [{ heading: 'RESPOSTA', paragraphs: [raw.replace(/["\\\n\r\t]/g,' ').slice(0,1500)] }],
+          message_to_requester: 'Prezado(a),\n\nSegue a resposta juridica solicitada.'
+        };
+      }
+    }
     parsed._n = item.name; parsed._dt = item.date; parsed._dl = item.deadlineDisplay; parsed._d = item.demand;
 
     // Step 4: save result to server (fast call)
