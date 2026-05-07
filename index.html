@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Jurídico — TribeMD</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0D1F3C;--navy2:#132848;--navy3:#1A3360;--teal:#00B4A2;--teal2:#009E8E;--gold:#F5A623;--white:#FFF;--off:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.12);--text:rgba(255,255,255,0.90);--muted:rgba(255,255,255,0.55);--danger:#FF6B6B;--dangerBg:rgba(255,107,107,0.12);--warn:#F5A623;--warnBg:rgba(245,166,35,0.12);--success:#00B4A2;--successBg:rgba(0,180,162,0.12);}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--text);min-height:100vh}
+.header{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-mark{width:38px;height:38px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:22px;height:22px}
+.logo-text{font-size:18px;font-weight:600;color:var(--white);letter-spacing:-0.3px}
+.logo-sub{font-size:11px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-top:2px}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;font-family:inherit;padding:7px 14px;border-radius:7px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.3);color:var(--white)}
+.main{max-width:700px;margin:0 auto;padding:32px 24px 60px}
+.form-card{background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px}
+.card-title{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:18px;display:flex;align-items:center;gap:7px}
+.card-title::before{content:'';display:inline-block;width:3px;height:12px;background:var(--teal);border-radius:2px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:7px;letter-spacing:0.03em}
+input[type=text],input[type=date],textarea{width:100%;background:var(--off);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:inherit;font-size:14px;padding:10px 13px;transition:border-color .15s;-webkit-appearance:none;color-scheme:dark}
+input[type=text]:focus,input[type=date]:focus,textarea:focus{outline:none;border-color:var(--teal)}
+input[readonly]{color:var(--muted);cursor:default}
+textarea{resize:vertical;min-height:120px;line-height:1.55}
+.demand-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.demand-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:13px 16px;cursor:pointer;transition:all .15s;user-select:none}
+.demand-card:hover{border-color:rgba(255,255,255,0.25)}
+.demand-card.selected{border-color:var(--teal);background:rgba(0,180,162,0.1)}
+.demand-letter{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);display:block;margin-bottom:4px}
+.demand-card.selected .demand-letter{color:var(--teal)}
+.demand-name{font-size:14px;font-weight:500;color:var(--text)}
+.demand-card.selected .demand-name{color:var(--white)}
+.file-area{border:1px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;position:relative;background:var(--off);transition:border-color .15s}
+.file-area:hover{border-color:rgba(255,255,255,0.3)}
+.file-area.dragover{border-color:var(--teal);background:rgba(0,180,162,0.07)}
+.file-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.error-box{background:var(--dangerBg);border:1px solid rgba(255,107,107,0.35);color:var(--danger);border-radius:9px;padding:12px 16px;font-size:13px;margin-bottom:20px;display:none}
+.warn-box{background:var(--warnBg);border:1px solid rgba(245,166,35,0.4);color:var(--warn);border-radius:8px;padding:11px 14px;font-size:13px;margin-top:10px;display:none;line-height:1.55}
+.btn-primary{width:100%;background:var(--teal);border:none;border-radius:10px;color:var(--white);font-family:inherit;font-size:15px;font-weight:600;padding:15px;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:var(--teal2)}
+.spin{animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* ADMIN */
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.admin-title{font-size:18px;font-weight:600}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.badge-pending{background:rgba(245,166,35,0.15);color:var(--gold);border:1px solid rgba(245,166,35,0.3)}
+.badge-processed{background:rgba(100,149,237,0.15);color:#6495ED;border:1px solid rgba(100,149,237,0.3)}
+.badge-approved{background:var(--successBg);color:var(--success);border:1px solid rgba(0,180,162,0.3)}
+.request-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px}
+.req-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.req-name{font-size:15px;font-weight:600}
+.req-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.req-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn-sm{padding:7px 14px;font-size:12px;font-weight:500;border-radius:7px;cursor:pointer;font-family:inherit;transition:all .15s;border:1px solid var(--border);background:var(--off);color:var(--text)}
+.btn-sm:hover{border-color:rgba(255,255,255,0.3);color:var(--white)}
+.btn-sm.teal{border-color:rgba(0,180,162,0.5);color:var(--teal);background:rgba(0,180,162,0.08)}
+.btn-sm.teal:hover{background:rgba(0,180,162,0.15)}
+.btn-sm.gold{border-color:rgba(245,166,35,0.5);color:var(--gold);background:rgba(245,166,35,0.08)}
+.btn-sm.gold:hover{background:rgba(245,166,35,0.15)}
+.btn-sm.danger{border-color:rgba(255,107,107,0.4);color:var(--danger);background:rgba(255,107,107,0.07)}
+.btn-sm.danger:hover{background:rgba(255,107,107,0.15)}
+.btn-sm:disabled{opacity:0.4;cursor:not-allowed}
+.collapsible{display:none}
+.collapsible.open{display:block}
+.req-desc{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5;border-left:2px solid var(--border);padding-left:10px}
+.response-block{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-top:12px}
+.response-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap}
+.response-title{font-size:12px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:0.07em}
+.copy-btns{display:flex;gap:6px;flex-wrap:wrap}
+.resp-section{margin-bottom:14px}
+.resp-heading{font-size:13px;font-weight:600;color:var(--white);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.03em}
+.resp-para{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:6px;padding-left:12px;border-left:2px solid rgba(0,180,162,0.3)}
+.resp-message{background:rgba(0,180,162,0.07);border:1px solid rgba(0,180,162,0.2);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin-top:14px}
+.resp-message-label{font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px}
+.processing-inline{background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--gold);margin-top:10px;display:flex;align-items:center;gap:10px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.screen{display:none}.screen.active{display:block}
+.login-card{max-width:380px;margin:80px auto 0;background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:32px}
+.login-title{font-size:18px;font-weight:600;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+.deadline-urgent{color:var(--danger) !important}
+.deadline-soon{color:var(--gold) !important}
+@media(max-width:520px){.two-col{grid-template-columns:1fr}.demand-grid{grid-template-columns:1fr}.main{padding:20px 16px 48px}.req-top{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="4" rx="1.5" fill="white"/><rect x="9" y="7" width="6" height="14" rx="1.5" fill="white"/></svg></div>
+    <div><div class="logo-text">TribeMD</div><div class="logo-sub">Portal Jurídico</div></div>
+  </div>
+  <button class="btn-ghost" onclick="goAdmin()">⚖ Painel Admin</button>
+</div>
+<div class="main">
+
+  <!-- FORM -->
+  <div class="screen active" id="screen-form">
+    <div id="errorBox" class="error-box"></div>
+    <div class="form-card">
+      <div class="card-title">Identificação</div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div><label>Nome do solicitante *</label><input type="text" id="rName" placeholder="Nome completo"></div>
+        <div><label>Data da solicitação</label><input type="text" id="rDate" readonly></div>
+      </div>
+      <div><label>Prazo solicitado *</label><input type="date" id="deadline" onchange="checkDeadline()" style="max-width:260px">
+        <div class="warn-box" id="deadlineWarn">⚠ <strong>Prazo exíguo.</strong> Dirija-se pessoalmente ao departamento jurídico para atendimento imediato.</div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="card-title">Tipo de demanda</div>
+      <div class="demand-grid">
+        <div class="demand-card" onclick="selDemand('opiniao',this)"><span class="demand-letter">a</span><span class="demand-name">Opinião jurídica</span></div>
+        <div class="demand-card" onclick="selDemand('revisao',this)"><span class="demand-letter">b</span><span class="demand-name">Revisão de documento</span></div>
+        <div class="demand-card" onclick="selDemand('elaboracao',this)"><span class="demand-letter">c</span><span class="demand-name">Elaboração de documento</span></div>
+        <div class="demand-card" onclick="selDemand('esclarecimento',this)"><span class="demand-letter">d</span><span class="demand-name">Esclarecimento de dúvida</span></div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="card-title">Descrição da demanda</div>
+      <textarea id="desc" placeholder="Descreva detalhadamente: contexto, partes envolvidas, prazos, informações relevantes…"></textarea>
+    </div>
+    <div class="form-card">
+      <div class="card-title">Documentos de referência <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--muted)">(opcional — PDF ou TXT)</span></div>
+      <div class="file-area" id="fileArea">
+        <input type="file" id="fileInput" accept=".pdf,.txt" onchange="handleFile(this.files[0])">
+        <div style="font-size:22px;opacity:0.4;margin-bottom:8px">📎</div>
+        <div style="font-size:14px;color:var(--muted)">Arraste ou clique para selecionar</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:4px">PDF · TXT</div>
+        <div id="fName" style="font-size:13px;color:var(--teal);margin-top:8px;font-weight:500"></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="submitForm()">Enviar solicitação →</button>
+  </div>
+
+  <!-- PROCESSING -->
+  <div class="screen" id="screen-processing">
+    <div style="text-align:center;padding:80px 20px">
+      <div style="margin-bottom:20px"><span class="spin" style="font-size:36px">⚖</span></div>
+      <div style="font-size:18px;font-weight:600">Registrando…</div>
+    </div>
+  </div>
+
+  <!-- SUCCESS — sem botão de retorno -->
+  <div class="screen" id="screen-success">
+    <div style="text-align:center;padding:100px 20px">
+      <div style="font-size:56px;margin-bottom:24px">✓</div>
+      <div style="font-size:22px;font-weight:600;margin-bottom:12px">Sua solicitação foi submetida</div>
+      <div style="font-size:15px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.6">O departamento jurídico analisará sua solicitação e entrará em contato em breve.</div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div class="screen" id="screen-login">
+    <div class="login-card">
+      <div class="login-title">Painel Administrativo</div>
+      <div class="login-sub">Acesso restrito ao departamento jurídico</div>
+      <div id="loginError" class="error-box" style="margin-bottom:16px"></div>
+      <label>Senha</label>
+      <input type="password" id="adminPwd" placeholder="••••••••" style="margin-bottom:16px" onkeydown="if(event.key==='Enter')adminLogin()">
+      <button class="btn-primary" onclick="adminLogin()">Entrar</button>
+      <div style="text-align:center;margin-top:16px"><button class="btn-ghost" onclick="showSc('screen-form')" style="font-size:12px">← Voltar ao portal</button></div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="screen" id="screen-admin">
+    <div class="admin-header">
+      <div><div class="admin-title">Painel Jurídico</div><div style="font-size:13px;color:var(--muted);margin-top:3px">Solicitações ordenadas por prazo</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-ghost" onclick="loadRequests()" style="font-size:12px">↻ Atualizar</button>
+        <button class="btn-ghost" onclick="adminLogout()" style="font-size:12px">Sair</button>
+      </div>
+    </div>
+    <div id="adminError" class="error-box"></div>
+    <div id="requestsList"></div>
+  </div>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script>
+const API='/.netlify/functions/juridico';
+let S={demand:null,adminPwd:null,fileContent:null,fileType:null,fileName:null};
+const today=new Date();
+document.getElementById('rDate').value=today.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('deadline').min=today.toISOString().split('T')[0];
+
+function showSc(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showErr(elId,msg){const b=document.getElementById(elId);b.textContent=msg;b.style.display='block';}
+function clearErr(elId){document.getElementById(elId).style.display='none';}
+function checkDeadline(){const val=document.getElementById('deadline').value;const w=document.getElementById('deadlineWarn');if(!val){w.style.display='none';return;}const diff=Math.floor((new Date(val+'T00:00:00')-new Date().setHours(0,0,0,0))/86400000);w.style.display=diff<3?'block':'none';}
+function selDemand(t,el){S.demand=t;document.querySelectorAll('.demand-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+function fmtDeadline(val){if(!val)return'';const[y,m,d]=val.split('-');return d+'/'+m+'/'+y;}
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// File handling
+async function handleFile(f){
+  if(!f)return;
+  S.fileName=f.name;
+  document.getElementById('fName').textContent='✓ '+f.name;
+  if(f.name.toLowerCase().endsWith('.pdf')){
+    S.fileType='pdf';
+    S.fileContent=await new Promise((r,j)=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.onerror=j;x.readAsDataURL(f);});
+  } else {
+    S.fileType='text';
+    S.fileContent=await new Promise((r,j)=>{const x=new FileReader();x.onload=()=>r(x.result);x.onerror=j;x.readAsText(f,'UTF-8');});
+  }
+}
+const fa=document.getElementById('fileArea');
+fa.addEventListener('dragover',e=>{e.preventDefault();fa.classList.add('dragover');});
+fa.addEventListener('dragleave',()=>fa.classList.remove('dragover'));
+fa.addEventListener('drop',e=>{e.preventDefault();fa.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f){handleFile(f);}});
+
+function buildSys(demand,detailed){
+  const yr=new Date().getFullYear();
+  const depth=detailed?'Elabore com profundidade maxima, fundamentos doutrinarios e jurisprudenciais detalhados, analise de riscos e recomendacoes praticas completas.':'Seja conciso e direto. Resposta sintetica com os pontos essenciais.';
+  const base='Voce e um advogado brasileiro senior especialista em direito empresarial. '+depth+' NUNCA invente leis ou precedentes.\n\nResposta EXCLUSIVAMENTE em JSON valido. Nao use markdown. Use apenas aspas duplas no JSON.';
+  const s={
+    opiniao:'\nRetorne este JSON:\n{"document_title":"PARECER JURIDICO No 001/'+yr+'","sections":[{"heading":"EMENTA","paragraphs":["texto"]},{"heading":"I - DA CONSULTA","paragraphs":["texto"]},{"heading":"II - DA ANALISE","paragraphs":["texto","texto"]},{"heading":"III - DA CONCLUSAO","paragraphs":["texto"]}],"message_to_requester":"Prezado(a) NOME,\n\nTexto da mensagem ao solicitante."}',
+    revisao:'\nRetorne este JSON:\n{"document_title":"ANALISE JURIDICA","sections":[{"heading":"I - OBJETO","paragraphs":["texto"]},{"heading":"II - ANALISE","paragraphs":["texto"]},{"heading":"III - RECOMENDACOES","paragraphs":["texto"]}],"message_to_requester":"Prezado(a) NOME,\n\nTexto da mensagem."}',
+    elaboracao:'\nRetorne este JSON:\n{"document_title":"TITULO DO DOCUMENTO","sections":[{"heading":"PREAMBULO","paragraphs":["texto"]},{"heading":"CLAUSULA PRIMEIRA","paragraphs":["texto"]},{"heading":"CLAUSULA SEGUNDA","paragraphs":["texto"]}],"message_to_requester":"Prezado(a) NOME,\n\nTexto da mensagem."}',
+    esclarecimento:'\nRetorne este JSON:\n{"document_title":"ESCLARECIMENTO JURIDICO","sections":[{"heading":"I - DUVIDA","paragraphs":["texto"]},{"heading":"II - RESPOSTA","paragraphs":["texto","texto"]},{"heading":"III - FUNDAMENTOS","paragraphs":["texto"]},{"heading":"IV - CONCLUSAO","paragraphs":["texto"]}],"message_to_requester":"Prezado(a) NOME,\n\nTexto da mensagem."}'
+  };
+  return base+(s[demand]||s.esclarecimento);
+}
+
+function buildMessages(formData,detailed){
+  const text='SOLICITANTE: '+formData.name+'\nDATA: '+formData.date+'\nPRAZO: '+formData.deadlineDisplay+'\nTIPO: '+formData.demand+'\n\nDESCRICAO:\n'+formData.desc;
+  if(formData.fileContent&&formData.fileType==='pdf'){
+    return [{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:formData.fileContent}},{type:'text',text:text+(detailed?'\n\nElabore com maxima profundidade e detalhamento.':'')}]}];
+  }
+  const fullText=formData.fileContent&&formData.fileType==='text'?text+'\n\nCONTEUDO DO DOCUMENTO ANEXADO:\n'+formData.fileContent:text;
+  return [{role:'user',content:fullText+(detailed?'\n\nElabore com maxima profundidade e detalhamento.':'')}];
+}
+
+function parseResponse(raw){
+  const clean=raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
+  try{return JSON.parse(clean);}catch(e1){
+    try{const m=clean.match(/\{[\s\S]*\}/);if(m)return JSON.parse(m[0]);}catch(e2){}
+    return{document_title:'RESPOSTA JURIDICA',sections:[{heading:'RESPOSTA',paragraphs:[clean.slice(0,2000)]}],message_to_requester:'Prezado(a),\n\nSegue a resposta juridica solicitada.'};
+  }
+}
+
+async function callClaude(key,formData,detailed){
+  const cr=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:detailed?4000:1500,system:buildSys(formData.demand,detailed),messages:buildMessages(formData,detailed)})});
+  const cdata=await cr.json();
+  if(!cr.ok)throw new Error((cdata.error&&cdata.error.message)||'Erro Claude API');
+  const raw=cdata.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+  return parseResponse(raw);
+}
+
+async function submitForm(){
+  clearErr('errorBox');
+  const name=document.getElementById('rName').value.trim();
+  const deadline=document.getElementById('deadline').value;
+  const desc=document.getElementById('desc').value.trim();
+  if(!name){showErr('errorBox','Informe o nome do solicitante.');return;}
+  if(!deadline){showErr('errorBox','Informe o prazo solicitado.');return;}
+  if(!S.demand){showErr('errorBox','Selecione o tipo de demanda.');return;}
+  if(!desc){showErr('errorBox','Descreva a demanda.');return;}
+  const diff=Math.floor((new Date(deadline+'T00:00:00')-new Date().setHours(0,0,0,0))/86400000);
+  if(diff<3){showErr('errorBox','Prazo exiguo: dirija-se pessoalmente ao departamento juridico.');return;}
+  showSc('screen-processing');
+  const formData={name,date:document.getElementById('rDate').value,deadline,deadlineDisplay:fmtDeadline(deadline),demand:S.demand,desc,fileContent:S.fileContent,fileType:S.fileType,fileName:S.fileName};
+  try{
+    const r=await fetch(API+'?action=submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,date:formData.date,deadline,deadlineDisplay:formData.deadlineDisplay,demand:S.demand,desc,fileName:S.fileName||null})});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Erro ao registrar');
+    const{id,key}=data;
+    showSc('screen-success');
+    if(S.fileContent&&S.fileName){
+      fetch(API+'?action=savefile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,fileName:S.fileName,fileType:S.fileType,fileContent:S.fileContent})}).catch(e=>console.error('File save error:',e));
+    }
+    processBackground(id,key,formData);
+  }catch(e){showSc('screen-form');showErr('errorBox','Erro: '+e.message);}
+}
+
+async function processBackground(id,key,formData,detailed){
+  try{
+    const parsed=await callClaude(key,formData,detailed||false);
+    parsed._n=formData.name;parsed._dt=formData.date;parsed._dl=formData.deadlineDisplay;parsed._d=formData.demand;
+    await fetch(API+'?action=savepublic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,response:parsed})});
+  }catch(e){console.error('Background error:',e.message);}
+}
+
+function goAdmin(){showSc('screen-login');document.getElementById('adminPwd').value='';clearErr('loginError');}
+function adminLogout(){S.adminPwd=null;showSc('screen-form');}
+async function adminLogin(){const pwd=document.getElementById('adminPwd').value;clearErr('loginError');S.adminPwd=pwd;showSc('screen-admin');await loadRequests();}
+
+async function loadRequests(){
+  const list=document.getElementById('requestsList');
+  list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><span class="spin">⏳</span> Carregando...</div>';
+  clearErr('adminError');
+  try{
+    const r=await fetch(API+'?action=list',{headers:{'X-Admin-Password':S.adminPwd}});
+    if(r.status===401){showSc('screen-login');showErr('loginError','Senha incorreta.');return;}
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error);
+    renderRequests(data);
+  }catch(e){showErr('adminError','Erro: '+e.message);list.innerHTML='';}
+}
+
+function toggleCollapse(id){
+  const el=document.getElementById('col-'+id);
+  const btn=document.getElementById('togbtn-'+id);
+  if(!el||!btn)return;
+  const open=el.classList.toggle('open');
+  btn.textContent=open?'Ocultar':'Exibir';
+}
+
+function buildResponseHTML(resp,id){
+  if(!resp||!resp.sections)return'';
+  let html='<div class="response-block">';
+  html+='<div class="response-header"><span class="response-title">'+esc(resp.document_title||'Resposta')+'</span>';
+  html+='<div class="copy-btns">';
+  html+='<button class="btn-sm" onclick="copyRespText(\''+id+'\')" style="font-size:11px;padding:5px 10px">&#128203; Copiar resposta</button>';
+  html+='<button class="btn-sm" onclick="copyRespMsg(\''+id+'\')" style="font-size:11px;padding:5px 10px">&#128234; Copiar mensagem</button>';
+  html+='<button class="btn-sm" onclick="copyFullResponse(\''+id+'\')" style="font-size:11px;padding:5px 10px">&#128196; Copiar tudo</button>';
+  html+='</div></div>';
+  for(const sec of(resp.sections||[])){
+    html+='<div class="resp-section">';
+    if(sec.heading)html+='<div class="resp-heading">'+esc(sec.heading)+'</div>';
+    for(const par of(sec.paragraphs||[]))html+='<div class="resp-para">'+esc(par)+'</div>';
+    html+='</div>';
+  }
+  if(resp.message_to_requester){
+    html+='<div class="resp-message-label">Mensagem ao solicitante</div>';
+    html+='<div class="resp-message">'+esc((resp.message_to_requester||'').replace(/\[NOME\]/g,resp._n||''))+'</div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function renderRequests(items){
+  const list=document.getElementById('requestsList');
+  if(!items.length){list.innerHTML='<div class="empty-state">Nenhuma solicitacao ainda.</div>';return;}
+  list.innerHTML=items.map(item=>{
+    const daysLeft=item.deadline?Math.floor((new Date(item.deadline+'T00:00:00')-new Date().setHours(0,0,0,0))/86400000):null;
+    const dlClass=daysLeft!==null?(daysLeft<=1?'deadline-urgent':daysLeft<=3?'deadline-soon':''):'';
+    const badge=item.status==='approved'?'<span class="status-badge badge-approved">Aprovado</span>':item.status==='processed'?'<span class="status-badge badge-processed">Processado</span>':'<span class="status-badge badge-pending">Aguardando</span>';
+    const canApprove=item.status==='processed';
+    const canDownload=item.status==='approved';
+    const isPending=item.status==='pending';
+    const hasFile=item.fileName?'&#128206; '+esc(item.fileName):'';
+    return '<div class="request-card" id="card-'+item.id+'">'+
+      '<div class="req-top"><div>'+
+      '<div class="req-name">'+esc(item.name)+'</div>'+
+      '<div class="req-meta">'+esc(item.demandLabel)+' &middot; Prazo: <span class="'+dlClass+'">'+esc(item.deadlineDisplay||item.deadline)+'</span> &middot; '+new Date(item.createdAt).toLocaleDateString('pt-BR')+(hasFile?' &middot; '+hasFile:'')+'</div>'+
+      '</div><div style="display:flex;align-items:center;gap:8px">'+badge+
+      '<button class="btn-sm" id="togbtn-'+item.id+'" onclick="toggleCollapse(\''+item.id+'\')" style="font-size:11px;padding:5px 12px">Exibir</button>'+
+      '</div></div>'+
+      '<div class="req-actions">'+
+      (canApprove?'<button class="btn-sm teal" onclick="approveRequest(\''+item.id+'\', this)">&#10003; Aprovar</button>':'')+
+      (canDownload?'<button class="btn-sm teal" onclick="downloadDoc(\''+item.id+'\')">&#8595; Word</button>':'')+
+      ((item.status==='processed'||item.status==='approved')?'<button class="btn-sm gold" onclick="detailRequest(\''+item.id+'\')" id="detbtn-'+item.id+'">&#10024; Detalhar mais</button>':'')+
+      '<button class="btn-sm danger" onclick="deleteRequest(\''+item.id+'\', this)">&#128465; Excluir</button>'+
+      '</div>'+
+      '<div class="collapsible" id="col-'+item.id+'">'+
+      '<div class="req-desc">'+esc(item.desc)+'</div>'+
+      (isPending?'<div class="processing-inline"><span class="spin">&#9203;</span> Processando resposta...</div>':'')+
+      (item.response?buildResponseHTML(item.response,item.id):'')+
+      '</div>'+
+      '</div>';
+  }).join('');
+}
+
+async function getItemById(id){
+  const r=await fetch(API+'?action=list',{headers:{'X-Admin-Password':S.adminPwd}});
+  const items=await r.json();
+  return items.find(i=>i.id===id);
+}
+async function copyRespText(id){
+  try{const item=await getItemById(id);if(!item||!item.response)return;const resp=item.response;let t=(resp.document_title||'')+'\n\n';for(const s of(resp.sections||[])){t+=(s.heading||'')+'\n';for(const p of(s.paragraphs||[]))t+=p+'\n';t+='\n';}await navigator.clipboard.writeText(t.trim());alert('Texto da resposta copiado!');}
+  catch(e){showErr('adminError','Erro: '+e.message);}
+}
+async function copyRespMsg(id){
+  try{const item=await getItemById(id);if(!item||!item.response)return;const msg=(item.response.message_to_requester||'').replace(/\[NOME\]/g,item.response._n||item.name||'');await navigator.clipboard.writeText(msg);alert('Mensagem ao solicitante copiada!');}
+  catch(e){showErr('adminError','Erro: '+e.message);}
+}
+async function copyFullResponse(id){
+  try{
+    const item=await getItemById(id);if(!item||!item.response)return;
+    const resp=item.response;let t=(resp.document_title||'')+'\nSolicitante: '+(resp._n||'')+' | Data: '+(resp._dt||'')+' | Prazo: '+(resp._dl||'')+'\n\n';
+    for(const s of(resp.sections||[])){t+=(s.heading||'')+'\n';for(const p of(s.paragraphs||[]))t+=p+'\n';t+='\n';}
+    if(resp.message_to_requester)t+='---\nMensagem ao solicitante:\n'+(resp.message_to_requester||'').replace(/\[NOME\]/g,resp._n||'');
+    await navigator.clipboard.writeText(t);alert('Tudo copiado!');
+  }catch(e){showErr('adminError','Erro: '+e.message);}
+}
+
+async function detailRequest(id){
+  const btn=document.getElementById('detbtn-'+id);
+  if(btn){btn.disabled=true;btn.textContent='&#9203; Detalhando...';}
+  clearErr('adminError');
+  try{
+    const item=await getItemById(id);
+    if(!item||!item.response)throw new Error('Resposta nao encontrada');
+    const kr=await fetch(API+'?action=getkey',{headers:{'X-Admin-Password':S.adminPwd}});
+    const kdata=await kr.json();
+    if(!kr.ok)throw new Error(kdata.error||'Erro ao obter chave');
+    const formData={name:item.name,date:item.date,deadline:item.deadline,deadlineDisplay:item.deadlineDisplay,demand:item.demand,desc:item.desc,fileContent:null,fileType:null};
+    const parsed=await callClaude(kdata.key,formData,true);
+    parsed._n=item.name;parsed._dt=item.date;parsed._dl=item.deadlineDisplay;parsed._d=item.demand;
+    const sr=await fetch(API+'?action=savepublic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,response:parsed})});
+    if(!sr.ok)throw new Error('Erro ao salvar');
+    await loadRequests();
+    // Reopen the collapsed section
+    const el=document.getElementById('col-'+id);
+    const tb=document.getElementById('togbtn-'+id);
+    if(el&&tb){el.classList.add('open');tb.textContent='Ocultar';}
+  }catch(e){
+    showErr('adminError','Erro ao detalhar: '+e.message);
+    if(btn){btn.disabled=false;btn.textContent='&#10024; Detalhar mais';}
+  }
+}
+
+async function downloadFile(id){
+  try{
+    const r=await fetch(API+'?action=getfile&fileid='+id,{headers:{'X-Admin-Password':S.adminPwd}});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Arquivo nao encontrado');
+    const{fileName,fileType,fileContent}=data;
+    let blob;
+    if(fileType==='pdf'){
+      const bytes=atob(fileContent);const arr=new Uint8Array(bytes.length);for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
+      blob=new Blob([arr],{type:'application/pdf'});
+    } else {
+      blob=new Blob([fileContent],{type:'text/plain;charset=utf-8'});
+    }
+    saveAs(blob,fileName||'documento');
+  }catch(e){showErr('adminError','Erro ao baixar arquivo: '+e.message);}
+}
+async function approveRequest(id,btn){
+  btn.disabled=true;
+  try{const r=await fetch(API+'?action=approve',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':S.adminPwd},body:JSON.stringify({id})});const data=await r.json();if(!r.ok)throw new Error(data.error);await loadRequests();}
+  catch(e){showErr('adminError','Erro: '+e.message);btn.disabled=false;}
+}
+async function deleteRequest(id,btn){
+  if(!confirm('Excluir esta solicitacao?'))return;btn.disabled=true;
+  try{const r=await fetch(API+'?action=delete',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':S.adminPwd},body:JSON.stringify({id})});const data=await r.json();if(!r.ok)throw new Error(data.error);document.getElementById('card-'+id)?.remove();}
+  catch(e){showErr('adminError','Erro: '+e.message);btn.disabled=false;}
+}
+async function downloadDoc(id){
+  try{
+    const item=await getItemById(id);
+    if(!item||!item.response){showErr('adminError','Resposta nao encontrada.');return;}
+    const blob=await makeDocx(item.response);
+    const fname=(item.response.document_title||'Documento').replace(/[^a-zA-Z0-9 ]/g,'_').slice(0,50)+'.docx';
+    saveAs(blob,fname);
+  }catch(e){showErr('adminError','Erro: '+e.message);}
+}
+function mkFooter(){const{Footer,Paragraph,TextRun,AlignmentType,PageNumber}=docx;return new Footer({children:[new Paragraph({children:[new TextRun({children:[PageNumber.CURRENT],font:'Arial',size:16,color:'555555'})],alignment:AlignmentType.RIGHT})]});}
+async function makeDocx(p){
+  const{Document,Paragraph,TextRun,AlignmentType}=docx;
+  const ch=[];
+  ch.push(new Paragraph({children:[new TextRun({text:p.document_title||'DOCUMENTO JURIDICO',font:'Calibri',size:24,bold:true,color:'000000'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:240,line:276,lineRule:'auto'}}));
+  ch.push(new Paragraph({children:[new TextRun({text:'Solicitante: '+(p._n||'')+'   |   Data: '+(p._dt||'')+'   |   Prazo: '+(p._dl||''),font:'Calibri',size:18,italics:true,color:'555555'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:480,line:276,lineRule:'auto'}}));
+  for(const sec of(p.sections||[])){
+    if(sec.heading)ch.push(new Paragraph({children:[new TextRun({text:sec.heading,font:'Calibri',size:22,bold:true,color:'000000'})],spacing:{before:280,after:120,line:276,lineRule:'auto'}}));
+    for(const par of(sec.paragraphs||[]))ch.push(new Paragraph({children:[new TextRun({text:par,font:'Calibri',size:22,color:'000000'})],spacing:{before:0,after:0,line:276,lineRule:'auto'},indent:{firstLine:709}}));
+    ch.push(new Paragraph({children:[new TextRun({text:'',font:'Calibri',size:22})],spacing:{before:0,after:120,line:276}}));
+  }
+  ch.push(new Paragraph({children:[new TextRun({text:'',font:'Calibri',size:22})],spacing:{before:480,after:0}}));
+  ch.push(new Paragraph({children:[new TextRun({text:'Lisboa/Sao Paulo, '+(p._dt||new Date().toLocaleDateString('pt-BR')),font:'Calibri',size:22,color:'000000'})],spacing:{before:0,after:240,line:276}}));
+  ch.push(new Paragraph({children:[new TextRun({text:'Departamento Juridico - TribeMD',font:'Calibri',size:22,bold:true,color:'000000'})],spacing:{before:0,after:0,line:276}}));
+  const doc=new Document({creator:'Renato Chiodaro',sections:[{properties:{page:{margin:{top:1417,bottom:1417,left:1701,right:1417}}},footers:{default:mkFooter()},children:ch}]});
+  return docx.Packer.toBlob(doc);
+}
+</script>
+</body>
+</html>
