@@ -10,7 +10,7 @@ const LABELS = {
 };
 
 function getReqStore() {
-  return getStore({ name: 'requests', siteID: SITE_ID });
+  return getStore({ name: 'requests', siteID: SITE_ID, token: process.env.NETLIFY_TOKEN });
 }
 
 function buildSys(demand) {
