@@ -1,28 +1,32 @@
 const { getStore } = require('@netlify/blobs');
-const SITE_ID = 'ef3bb316-0dc8-409d-b2d9-1f8210f5637b';
+
 const ADMIN_PASSWORD = 'Jur1$@ut0';
+const SITE_ID = 'ef3bb316-0dc8-409d-b2d9-1f8210f5637b';
 const LABELS = {
-  opiniao: 'Opinião jurídica',
-  revisao: 'Revisão de documento',
-  elaboracao: 'Elaboração de documento',
-  esclarecimento: 'Esclarecimento de dúvida'
+  opiniao: 'Opiniao juridica',
+  revisao: 'Revisao de documento',
+  elaboracao: 'Elaboracao de documento',
+  esclarecimento: 'Esclarecimento de duvida'
 };
+
+function getReqStore() {
+  return getStore({ name: 'requests', siteID: SITE_ID });
+}
 
 function buildSys(demand) {
   const yr = new Date().getFullYear();
-  const base = `Você é um advogado brasileiro sênior especialista em direito empresarial e corporativo. Elabore respostas jurídicas completas e tecnicamente rigorosas. NUNCA invente leis ou precedentes — cite apenas normas que você tem certeza que existem.\n\nINSTRUÇÃO CRÍTICA: Responda EXCLUSIVAMENTE com JSON válido. Sem texto adicional, sem markdown.`;
+  const base = 'Voce e um advogado brasileiro senior especialista em direito empresarial e corporativo. Elabore respostas juridicas completas e tecnicamente rigorosas. NUNCA invente leis ou precedentes.\n\nResposta EXCLUSIVAMENTE em JSON valido. Sem texto adicional.';
   const s = {
-    opiniao: `\nTipo: PARECER JURÍDICO conciso (máx 600 palavras no corpo)\n{"document_title":"PARECER JURÍDICO Nº 001/${yr}","sections":[{"heading":"EMENTA","paragraphs":["..."]},{"heading":"I – DA CONSULTA","paragraphs":["..."]},{"heading":"II – DA ANÁLISE JURÍDICA","paragraphs":["...","..."]},{"heading":"III – DA CONCLUSÃO","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}`,
-    revisao: `\nTipo: REVISÃO DE DOCUMENTO\n{"document_title":"ANÁLISE JURÍDICA DE DOCUMENTO","sections":[{"heading":"I – IDENTIFICAÇÃO E OBJETO","paragraphs":["..."]},{"heading":"II – ANÁLISE GERAL","paragraphs":["..."]},{"heading":"III – RECOMENDAÇÕES","paragraphs":["..."]}],"revised_content":"Texto revisado. Use [[DEL:excluído:DEL]] e [[INS:inserido:INS]].","message_to_requester":"Prezado(a) [NOME],\\n\\n..."}`,
-    elaboracao: `\nTipo: ELABORAÇÃO DE DOCUMENTO completo\n{"document_title":"Título adequado","sections":[{"heading":"Título da cláusula","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}`,
-    esclarecimento: `\nTipo: ESCLARECIMENTO JURÍDICO conciso (máx 600 palavras no corpo)\n{"document_title":"ESCLARECIMENTO JURÍDICO","sections":[{"heading":"I – DÚVIDA APRESENTADA","paragraphs":["..."]},{"heading":"II – RESPOSTA","paragraphs":["...","..."]},{"heading":"III – FUNDAMENTOS NORMATIVOS","paragraphs":["..."]},{"heading":"IV – CONCLUSÃO","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}`
+    opiniao: '\n{"document_title":"PARECER JURIDICO No 001/' + yr + '","sections":[{"heading":"EMENTA","paragraphs":["..."]},{"heading":"I - DA CONSULTA","paragraphs":["..."]},{"heading":"II - DA ANALISE JURIDICA","paragraphs":["...","..."]},{"heading":"III - DA CONCLUSAO","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}',
+    revisao: '\n{"document_title":"ANALISE JURIDICA DE DOCUMENTO","sections":[{"heading":"I - IDENTIFICACAO E OBJETO","paragraphs":["..."]},{"heading":"II - ANALISE GERAL","paragraphs":["..."]},{"heading":"III - RECOMENDACOES","paragraphs":["..."]}],"revised_content":"Texto revisado.","message_to_requester":"Prezado(a) [NOME],\\n\\n..."}',
+    elaboracao: '\n{"document_title":"Titulo adequado","sections":[{"heading":"Clausula","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}',
+    esclarecimento: '\n{"document_title":"ESCLARECIMENTO JURIDICO","sections":[{"heading":"I - DUVIDA APRESENTADA","paragraphs":["..."]},{"heading":"II - RESPOSTA","paragraphs":["...","..."]},{"heading":"III - FUNDAMENTOS NORMATIVOS","paragraphs":["..."]},{"heading":"IV - CONCLUSAO","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}'
   };
-  return base + s[demand];
+  return base + (s[demand] || s.esclarecimento);
 }
 
 exports.handler = async function(event) {
-  const action = (event.queryStringParameters || {}).action;
-  const headers = {
+  const CORS = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -30,18 +34,18 @@ exports.handler = async function(event) {
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers, body: '' };
+    return { statusCode: 204, headers: CORS, body: '' };
   }
 
-  const store = getStore({ name: 'requests', siteID: process.env.NETLIFY_SITE_ID || 'ef3bb316-0dc8-409d-b2d9-1f8210f5637b' });
+  const action = (event.queryStringParameters || {}).action;
 
-  // PUBLIC: submit a new request
-  if (action === 'submit') {
-    try {
+  try {
+    if (action === 'submit') {
       const body = JSON.parse(event.body);
       const id = Date.now().toString();
+      const store = getReqStore();
       await store.setJSON(id, {
-        id,
+        id: id,
         name: body.name,
         date: body.date,
         deadline: body.deadline,
@@ -52,110 +56,71 @@ exports.handler = async function(event) {
         status: 'pending',
         createdAt: new Date().toISOString()
       });
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true, id }) };
-    } catch (err) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ ok: true, id: id }) };
     }
-  }
 
-  // All other actions require admin password
-  const adminPwd = event.headers['x-admin-password'];
-  if (adminPwd !== ADMIN_PASSWORD) {
-    return { statusCode: 401, headers, body: JSON.stringify({ error: 'Senha incorreta' }) };
-  }
+    const adminPwd = event.headers['x-admin-password'];
+    if (adminPwd !== ADMIN_PASSWORD) {
+      return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Senha incorreta' }) };
+    }
 
-  // ADMIN: list all requests ordered by deadline
-  if (action === 'list') {
-    try {
-      const { blobs } = await store.list();
-      const items = await Promise.all(blobs.map(b => store.get(b.key, { type: 'json' })));
+    const store = getReqStore();
+
+    if (action === 'list') {
+      const result = await store.list();
+      const items = await Promise.all(result.blobs.map(function(b) { return store.get(b.key, { type: 'json' }); }));
       const valid = items.filter(Boolean);
-      valid.sort((a, b) => {
+      valid.sort(function(a, b) {
         if (!a.deadline) return 1;
         if (!b.deadline) return -1;
         return a.deadline.localeCompare(b.deadline);
       });
-      return { statusCode: 200, headers, body: JSON.stringify(valid) };
-    } catch (err) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+      return { statusCode: 200, headers: CORS, body: JSON.stringify(valid) };
     }
-  }
 
-  // ADMIN: process a request with Claude
-  if (action === 'process') {
-    try {
-      const { id } = JSON.parse(event.body);
+    if (action === 'process') {
+      const body = JSON.parse(event.body);
+      const id = body.id;
       const item = await store.get(id, { type: 'json' });
-      if (!item) return { statusCode: 404, headers, body: JSON.stringify({ error: 'Solicitação não encontrada' }) };
-
-      const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-      if (!ANTHROPIC_API_KEY) return { statusCode: 500, headers, body: JSON.stringify({ error: 'API key não configurada' }) };
-
-      const content = `SOLICITANTE: ${item.name}\nDATA DA SOLICITAÇÃO: ${item.date}\nPRAZO SOLICITADO: ${item.deadlineDisplay}\nTIPO: ${item.demandLabel}\n\nDESCRIÇÃO:\n${item.desc}`;
-
+      if (!item) return { statusCode: 404, headers: CORS, body: JSON.stringify({ error: 'Nao encontrado' }) };
+      const KEY = process.env.ANTHROPIC_API_KEY;
+      if (!KEY) return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'API key nao configurada' }) };
+      const content = 'SOLICITANTE: ' + item.name + '\nDATA: ' + item.date + '\nPRAZO: ' + item.deadlineDisplay + '\nTIPO: ' + item.demandLabel + '\n\nDESCRICAO:\n' + item.desc;
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 2000,
-          system: buildSys(item.demand),
-          messages: [{ role: 'user', content }]
-        })
+        headers: { 'Content-Type': 'application/json', 'x-api-key': KEY, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 2000, system: buildSys(item.demand), messages: [{ role: 'user', content: content }] })
       });
-
       const data = await resp.json();
-      if (!resp.ok) return { statusCode: resp.status, headers, body: JSON.stringify({ error: data.error?.message || 'Erro na API' }) };
-
-      const raw = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-      let parsed;
-      try {
-        parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim());
-      } catch {
-        const m = raw.match(/\{[\s\S]*\}/);
-        if (!m) throw new Error('Erro ao interpretar resposta da IA');
-        parsed = JSON.parse(m[0]);
-      }
-
-      parsed._n = item.name;
-      parsed._dt = item.date;
-      parsed._dl = item.deadlineDisplay;
-      parsed._d = item.demand;
-
-      await store.setJSON(id, { ...item, status: 'processed', response: parsed, processedAt: new Date().toISOString() });
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true, response: parsed }) };
-    } catch (err) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+      if (!resp.ok) return { statusCode: resp.status, headers: CORS, body: JSON.stringify({ error: (data.error && data.error.message) || 'Erro API' }) };
+      const raw = data.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('');
+      var parsed;
+      try { parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()); }
+      catch(e) { var m = raw.match(/\{[\s\S]*\}/); if (!m) throw new Error('JSON invalido'); parsed = JSON.parse(m[0]); }
+      parsed._n = item.name; parsed._dt = item.date; parsed._dl = item.deadlineDisplay; parsed._d = item.demand;
+      await store.setJSON(id, Object.assign({}, item, { status: 'processed', response: parsed, processedAt: new Date().toISOString() }));
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ ok: true, response: parsed }) };
     }
-  }
 
-  // ADMIN: approve a request
-  if (action === 'approve') {
-    try {
-      const { id } = JSON.parse(event.body);
+    if (action === 'approve') {
+      const body = JSON.parse(event.body);
+      const id = body.id;
       const item = await store.get(id, { type: 'json' });
-      if (!item) return { statusCode: 404, headers, body: JSON.stringify({ error: 'Não encontrado' }) };
-      await store.setJSON(id, { ...item, status: 'approved', approvedAt: new Date().toISOString() });
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-    } catch (err) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+      if (!item) return { statusCode: 404, headers: CORS, body: JSON.stringify({ error: 'Nao encontrado' }) };
+      await store.setJSON(id, Object.assign({}, item, { status: 'approved', approvedAt: new Date().toISOString() }));
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ ok: true }) };
     }
-  }
 
-  // ADMIN: delete a request
-  if (action === 'delete') {
-    try {
-      const { id } = JSON.parse(event.body);
+    if (action === 'delete') {
+      const body = JSON.parse(event.body);
+      const id = body.id;
       await store.delete(id);
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-    } catch (err) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ ok: true }) };
     }
-  }
 
-  return { statusCode: 400, headers, body: JSON.stringify({ error: 'Ação desconhecida' }) };
+    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Acao desconhecida' }) };
+
+  } catch(err) {
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message || 'Erro interno' }) };
+  }
 };
