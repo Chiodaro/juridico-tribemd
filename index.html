@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Jurídico — TribeMD</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D1F3C;--navy2:#132848;--navy3:#1A3360;
+  --teal:#00B4A2;--teal2:#009E8E;--gold:#F5A623;
+  --white:#FFF;--off:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.12);
+  --text:rgba(255,255,255,0.90);--muted:rgba(255,255,255,0.55);
+  --danger:#FF6B6B;--dangerBg:rgba(255,107,107,0.12);
+  --warn:#F5A623;--warnBg:rgba(245,166,35,0.12);
+  --success:#00B4A2;--successBg:rgba(0,180,162,0.12);
+}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--text);min-height:100vh}
+.header{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-mark{width:38px;height:38px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:22px;height:22px}
+.logo-text{font-size:18px;font-weight:600;color:var(--white);letter-spacing:-0.3px}
+.logo-sub{font-size:11px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-top:2px}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;font-family:inherit;padding:7px 14px;border-radius:7px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.3);color:var(--white)}
+.main{max-width:700px;margin:0 auto;padding:32px 24px 60px}
+.form-card{background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px}
+.card-title{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:18px;display:flex;align-items:center;gap:7px}
+.card-title::before{content:'';display:inline-block;width:3px;height:12px;background:var(--teal);border-radius:2px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:7px;letter-spacing:0.03em}
+input[type=text],input[type=date],textarea{width:100%;background:var(--off);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:inherit;font-size:14px;padding:10px 13px;transition:border-color .15s;-webkit-appearance:none;color-scheme:dark}
+input[type=text]:focus,input[type=date]:focus,textarea:focus{outline:none;border-color:var(--teal)}
+input[readonly]{color:var(--muted);cursor:default}
+textarea{resize:vertical;min-height:120px;line-height:1.55}
+.demand-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.demand-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:13px 16px;cursor:pointer;transition:all .15s;user-select:none}
+.demand-card:hover{border-color:rgba(255,255,255,0.25)}
+.demand-card.selected{border-color:var(--teal);background:rgba(0,180,162,0.1)}
+.demand-letter{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);display:block;margin-bottom:4px}
+.demand-card.selected .demand-letter{color:var(--teal)}
+.demand-name{font-size:14px;font-weight:500;color:var(--text)}
+.demand-card.selected .demand-name{color:var(--white)}
+.file-area{border:1px dashed var(--border);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;position:relative;background:var(--off);transition:border-color .15s}
+.file-area:hover{border-color:rgba(255,255,255,0.3)}
+.file-area.dragover{border-color:var(--teal);background:rgba(0,180,162,0.07)}
+.file-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.error-box{background:var(--dangerBg);border:1px solid rgba(255,107,107,0.35);color:var(--danger);border-radius:9px;padding:12px 16px;font-size:13px;margin-bottom:20px;display:none}
+.warn-box{background:var(--warnBg);border:1px solid rgba(245,166,35,0.4);color:var(--warn);border-radius:8px;padding:11px 14px;font-size:13px;margin-top:10px;display:none;line-height:1.55}
+.btn-primary{width:100%;background:var(--teal);border:none;border-radius:10px;color:var(--white);font-family:inherit;font-size:15px;font-weight:600;padding:15px;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:var(--teal2)}
+.spin{animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ADMIN */
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.admin-title{font-size:18px;font-weight:600}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.badge-pending{background:rgba(245,166,35,0.15);color:var(--gold);border:1px solid rgba(245,166,35,0.3)}
+.badge-processed{background:rgba(100,149,237,0.15);color:#6495ED;border:1px solid rgba(100,149,237,0.3)}
+.badge-approved{background:var(--successBg);color:var(--success);border:1px solid rgba(0,180,162,0.3)}
+.request-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px}
+.req-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.req-name{font-size:15px;font-weight:600}
+.req-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.req-desc{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;border-left:2px solid var(--border);padding-left:10px}
+.req-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sm{padding:7px 14px;font-size:12px;font-weight:500;border-radius:7px;cursor:pointer;font-family:inherit;transition:all .15s;border:1px solid var(--border);background:var(--off);color:var(--text)}
+.btn-sm:hover{border-color:rgba(255,255,255,0.3);color:var(--white)}
+.btn-sm.teal{border-color:rgba(0,180,162,0.5);color:var(--teal);background:rgba(0,180,162,0.08)}
+.btn-sm.teal:hover{background:rgba(0,180,162,0.15)}
+.btn-sm.danger{border-color:rgba(255,107,107,0.4);color:var(--danger);background:rgba(255,107,107,0.07)}
+.btn-sm.danger:hover{background:rgba(255,107,107,0.15)}
+.btn-sm:disabled{opacity:0.4;cursor:not-allowed}
+.response-preview{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:12px;font-size:13px;line-height:1.65;white-space:pre-wrap;display:none;color:var(--text)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.screen{display:none}.screen.active{display:block}
+.login-card{max-width:380px;margin:80px auto 0;background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:32px}
+.login-title{font-size:18px;font-weight:600;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+.deadline-urgent{color:var(--danger) !important}
+.deadline-soon{color:var(--gold) !important}
+@media(max-width:520px){.two-col{grid-template-columns:1fr}.demand-grid{grid-template-columns:1fr}.main{padding:20px 16px 48px}.req-top{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="4" rx="1.5" fill="white"/><rect x="9" y="7" width="6" height="14" rx="1.5" fill="white"/></svg>
+    </div>
+    <div>
+      <div class="logo-text">TribeMD</div>
+      <div class="logo-sub">Portal Jurídico</div>
+    </div>
+  </div>
+  <button class="btn-ghost" onclick="goAdmin()">⚖ Painel Admin</button>
+</div>
+
+<div class="main">
+
+  <!-- FORM -->
+  <div class="screen active" id="screen-form">
+    <div id="errorBox" class="error-box"></div>
+    <div class="form-card">
+      <div class="card-title">Identificação</div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div><label>Nome do solicitante *</label><input type="text" id="rName" placeholder="Nome completo"></div>
+        <div><label>Data da solicitação</label><input type="text" id="rDate" readonly></div>
+      </div>
+      <div><label>Prazo solicitado *</label><input type="date" id="deadline" onchange="checkDeadline()" style="max-width:260px">
+        <div class="warn-box" id="deadlineWarn">⚠ <strong>Prazo exíguo.</strong> Dirija-se pessoalmente ao departamento jurídico para atendimento imediato.</div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="card-title">Tipo de demanda</div>
+      <div class="demand-grid">
+        <div class="demand-card" onclick="selDemand('opiniao',this)"><span class="demand-letter">a</span><span class="demand-name">Opinião jurídica</span></div>
+        <div class="demand-card" onclick="selDemand('revisao',this)"><span class="demand-letter">b</span><span class="demand-name">Revisão de documento</span></div>
+        <div class="demand-card" onclick="selDemand('elaboracao',this)"><span class="demand-letter">c</span><span class="demand-name">Elaboração de documento</span></div>
+        <div class="demand-card" onclick="selDemand('esclarecimento',this)"><span class="demand-letter">d</span><span class="demand-name">Esclarecimento de dúvida</span></div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="card-title">Descrição da demanda</div>
+      <textarea id="desc" placeholder="Descreva detalhadamente: contexto, partes envolvidas, prazos, informações relevantes…"></textarea>
+    </div>
+    <button class="btn-primary" onclick="submitForm()">Enviar solicitação →</button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="screen" id="screen-success">
+    <div style="text-align:center;padding:80px 20px">
+      <div style="font-size:48px;margin-bottom:20px">✓</div>
+      <div style="font-size:20px;font-weight:600;margin-bottom:10px">Solicitação enviada com sucesso</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:32px">O departamento jurídico analisará sua solicitação e entrará em contato.</div>
+      <button class="btn-ghost" onclick="newReq()">← Nova solicitação</button>
+    </div>
+  </div>
+
+  <!-- PROCESSING FORM -->
+  <div class="screen" id="screen-processing">
+    <div style="text-align:center;padding:80px 20px">
+      <div style="margin-bottom:20px"><span class="spin" style="font-size:36px">⏳</span></div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:8px">Enviando solicitação…</div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div class="screen" id="screen-login">
+    <div class="login-card">
+      <div class="login-title">Painel Administrativo</div>
+      <div class="login-sub">Acesso restrito ao departamento jurídico</div>
+      <div id="loginError" class="error-box" style="margin-bottom:16px"></div>
+      <label>Senha</label>
+      <input type="password" id="adminPwd" placeholder="••••••••" style="margin-bottom:16px" onkeydown="if(event.key==='Enter')adminLogin()">
+      <button class="btn-primary" onclick="adminLogin()">Entrar</button>
+      <div style="text-align:center;margin-top:16px">
+        <button class="btn-ghost" onclick="showSc('screen-form')" style="font-size:12px">← Voltar ao portal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="screen" id="screen-admin">
+    <div class="admin-header">
+      <div>
+        <div class="admin-title">Painel Jurídico</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:3px">Solicitações ordenadas por prazo</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-ghost" onclick="loadRequests()" style="font-size:12px">↻ Atualizar</button>
+        <button class="btn-ghost" onclick="adminLogout()" style="font-size:12px">Sair</button>
+      </div>
+    </div>
+    <div id="adminError" class="error-box"></div>
+    <div id="requestsList"></div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script>
+const API = '/.netlify/functions/juridico';
+let S = { demand: null, adminPwd: null };
+
+// Init
+const today = new Date();
+document.getElementById('rDate').value = today.toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+document.getElementById('deadline').min = today.toISOString().split('T')[0];
+
+function showSc(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function showErr(elId, msg) { const b = document.getElementById(elId); b.textContent = msg; b.style.display = 'block'; }
+function clearErr(elId) { document.getElementById(elId).style.display = 'none'; }
+
+function checkDeadline() {
+  const val = document.getElementById('deadline').value;
+  const w = document.getElementById('deadlineWarn');
+  if (!val) { w.style.display = 'none'; return; }
+  const diff = Math.floor((new Date(val + 'T00:00:00') - new Date().setHours(0,0,0,0)) / 86400000);
+  w.style.display = diff < 3 ? 'block' : 'none';
+}
+
+function selDemand(t, el) {
+  S.demand = t;
+  document.querySelectorAll('.demand-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function fmtDeadline(val) { if (!val) return ''; const [y,m,d] = val.split('-'); return d+'/'+m+'/'+y; }
+
+async function submitForm() {
+  clearErr('errorBox');
+  const name = document.getElementById('rName').value.trim();
+  const deadline = document.getElementById('deadline').value;
+  const desc = document.getElementById('desc').value.trim();
+  if (!name) { showErr('errorBox', 'Informe o nome do solicitante.'); return; }
+  if (!deadline) { showErr('errorBox', 'Informe o prazo solicitado.'); return; }
+  if (!S.demand) { showErr('errorBox', 'Selecione o tipo de demanda.'); return; }
+  if (!desc) { showErr('errorBox', 'Descreva a demanda.'); return; }
+  const diff = Math.floor((new Date(deadline + 'T00:00:00') - new Date().setHours(0,0,0,0)) / 86400000);
+  if (diff < 3) { showErr('errorBox', 'Prazo exíguo: dirija-se pessoalmente ao departamento jurídico.'); return; }
+  showSc('screen-processing');
+  try {
+    const r = await fetch(API + '?action=submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, date: document.getElementById('rDate').value, deadline, deadlineDisplay: fmtDeadline(deadline), demand: S.demand, desc })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro ao enviar');
+    showSc('screen-success');
+  } catch(e) { showSc('screen-form'); showErr('errorBox', 'Erro: ' + e.message); }
+}
+
+function newReq() {
+  S.demand = null;
+  document.getElementById('rName').value = '';
+  document.getElementById('deadline').value = '';
+  document.getElementById('deadlineWarn').style.display = 'none';
+  document.getElementById('desc').value = '';
+  document.querySelectorAll('.demand-card').forEach(c => c.classList.remove('selected'));
+  clearErr('errorBox'); showSc('screen-form');
+}
+
+function goAdmin() { showSc('screen-login'); document.getElementById('adminPwd').value = ''; clearErr('loginError'); }
+function adminLogout() { S.adminPwd = null; showSc('screen-form'); }
+
+async function adminLogin() {
+  const pwd = document.getElementById('adminPwd').value;
+  clearErr('loginError');
+  showSc('screen-admin');
+  S.adminPwd = pwd;
+  await loadRequests();
+}
+
+async function loadRequests() {
+  const list = document.getElementById('requestsList');
+  list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><span class="spin">⏳</span> Carregando…</div>';
+  clearErr('adminError');
+  try {
+    const r = await fetch(API + '?action=list', { headers: { 'X-Admin-Password': S.adminPwd } });
+    if (r.status === 401) { showSc('screen-login'); showErr('loginError', 'Senha incorreta.'); return; }
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    renderRequests(data);
+  } catch(e) { showErr('adminError', 'Erro: ' + e.message); list.innerHTML = ''; }
+}
+
+function renderRequests(items) {
+  const list = document.getElementById('requestsList');
+  if (!items.length) { list.innerHTML = '<div class="empty-state">Nenhuma solicitação ainda.</div>'; return; }
+  list.innerHTML = items.map(item => {
+    const daysLeft = item.deadline ? Math.floor((new Date(item.deadline + 'T00:00:00') - new Date().setHours(0,0,0,0)) / 86400000) : null;
+    const dlClass = daysLeft !== null ? (daysLeft <= 1 ? 'deadline-urgent' : daysLeft <= 3 ? 'deadline-soon' : '') : '';
+    const badge = item.status === 'approved' ? '<span class="status-badge badge-approved">Aprovado</span>' :
+                  item.status === 'processed' ? '<span class="status-badge badge-processed">Processado</span>' :
+                  '<span class="status-badge badge-pending">Aguardando</span>';
+    const canProcess = item.status === 'pending';
+    const canApprove = item.status === 'processed';
+    const canDownload = item.status === 'approved';
+    return `
+    <div class="request-card" id="card-${item.id}">
+      <div class="req-top">
+        <div>
+          <div class="req-name">${esc(item.name)}</div>
+          <div class="req-meta">${esc(item.demandLabel)} · Prazo: <span class="${dlClass}">${esc(item.deadlineDisplay || item.deadline)}</span> · Recebido: ${new Date(item.createdAt).toLocaleDateString('pt-BR')}</div>
+        </div>
+        ${badge}
+      </div>
+      <div class="req-desc">${esc(item.desc)}</div>
+      <div class="req-actions">
+        ${canProcess ? `<button class="btn-sm teal" onclick="processRequest('${item.id}', this)">▶ Processar com IA</button>` : ''}
+        ${canApprove ? `<button class="btn-sm teal" onclick="approveRequest('${item.id}', this)">✓ Aprovar</button>` : ''}
+        ${(item.status === 'processed' || item.status === 'approved') ? `<button class="btn-sm" onclick="toggleResponse('${item.id}')">👁 Ver resposta</button>` : ''}
+        ${canDownload ? `<button class="btn-sm teal" onclick="downloadDoc('${item.id}')">⬇ Word</button>` : ''}
+        ${canDownload ? `<button class="btn-sm" onclick="copyMessage('${item.id}')">📋 Copiar mensagem</button>` : ''}
+        <button class="btn-sm danger" onclick="deleteRequest('${item.id}', this)">🗑 Excluir</button>
+      </div>
+      ${item.response ? `<div class="response-preview" id="resp-${item.id}">${buildPreview(item.response)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function buildPreview(resp) {
+  if (!resp || !resp.sections) return '';
+  return resp.sections.map(s => `<strong>${esc(s.heading||'')}</strong>\n${(s.paragraphs||[]).map(p=>esc(p)).join('\n')}`).join('\n\n');
+}
+
+function toggleResponse(id) {
+  const el = document.getElementById('resp-' + id);
+  if (!el) return;
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+let _requests = {};
+
+async function processRequest(id, btn) {
+  btn.disabled = true; btn.textContent = '⏳ Processando…';
+  clearErr('adminError');
+  let dots = 0;
+  const ticker = setInterval(() => {
+    dots = (dots + 1) % 4;
+    btn.textContent = '⏳ Aguarde' + '.'.repeat(dots + 1);
+  }, 1500);
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 55000);
+    const r = await fetch(API + '?action=process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Password': S.adminPwd },
+      body: JSON.stringify({ id }),
+      signal: ctrl.signal,
+      keepalive: true
+    });
+    clearTimeout(timer);
+    const txt = await r.text();
+    let data;
+    try { data = JSON.parse(txt); } catch(e) { throw new Error('Resposta: ' + txt.slice(0,200)); }
+    if (!r.ok) throw new Error(data.error || 'Erro ao processar');
+    await loadRequests();
+  } catch(e) {
+    if (e.name === 'AbortError') {
+      showErr('adminError', 'Tempo esgotado. Tente novamente em alguns instantes.');
+    } else {
+      showErr('adminError', 'Erro ao processar: ' + e.message);
+    }
+    btn.disabled = false; btn.textContent = '▶ Processar com IA';
+  } finally {
+    clearInterval(ticker);
+  }
+}
+
+async function approveRequest(id, btn) {
+  btn.disabled = true;
+  try {
+    const r = await fetch(API + '?action=approve', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Password': S.adminPwd },
+      body: JSON.stringify({ id })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    await loadRequests();
+  } catch(e) { showErr('adminError', 'Erro: ' + e.message); btn.disabled = false; }
+}
+
+async function deleteRequest(id, btn) {
+  if (!confirm('Excluir esta solicitação?')) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(API + '?action=delete', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Password': S.adminPwd },
+      body: JSON.stringify({ id })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    document.getElementById('card-' + id)?.remove();
+  } catch(e) { showErr('adminError', 'Erro: ' + e.message); btn.disabled = false; }
+}
+
+async function downloadDoc(id) {
+  // Find response from the rendered card
+  const respEl = document.getElementById('resp-' + id);
+  if (!respEl) { showErr('adminError', 'Resposta não encontrada. Recarregue o painel.'); return; }
+  // Re-fetch to get full data
+  try {
+    const r = await fetch(API + '?action=list', { headers: { 'X-Admin-Password': S.adminPwd } });
+    const items = await r.json();
+    const item = items.find(i => i.id === id);
+    if (!item || !item.response) { showErr('adminError', 'Dados não encontrados.'); return; }
+    const blob = await makeDocx(item.response);
+    const fname = (item.response.document_title || 'Documento').replace(/[^a-zA-ZÀ-ÿ0-9 ]/g,'_').slice(0,50) + '.docx';
+    saveAs(blob, fname);
+  } catch(e) { showErr('adminError', 'Erro ao gerar documento: ' + e.message); }
+}
+
+async function copyMessage(id) {
+  try {
+    const r = await fetch(API + '?action=list', { headers: { 'X-Admin-Password': S.adminPwd } });
+    const items = await r.json();
+    const item = items.find(i => i.id === id);
+    if (!item || !item.response) return;
+    const msg = (item.response.message_to_requester || '').replace(/\[NOME\]/g, item.name);
+    await navigator.clipboard.writeText(msg);
+    alert('Mensagem copiada para a área de transferência!');
+  } catch(e) { showErr('adminError', 'Erro: ' + e.message); }
+}
+
+function mkFooter() {
+  const { Footer, Paragraph, TextRun, AlignmentType, PageNumber } = docx;
+  return new Footer({ children: [new Paragraph({ children: [new TextRun({ children: [PageNumber.CURRENT], font:'Arial', size:16, color:'555555' })], alignment: AlignmentType.RIGHT })] });
+}
+
+async function makeDocx(p) {
+  const { Document, Paragraph, TextRun, AlignmentType } = docx;
+  const ch = [];
+  ch.push(new Paragraph({ children: [new TextRun({ text: p.document_title || 'DOCUMENTO JURÍDICO', font:'Calibri', size:24, bold:true, color:'000000' })], alignment: AlignmentType.CENTER, spacing:{ before:0, after:240, line:276, lineRule:'auto' } }));
+  ch.push(new Paragraph({ children: [new TextRun({ text: `Solicitante: ${p._n||''}   |   Data: ${p._dt||''}   |   Prazo: ${p._dl||''}`, font:'Calibri', size:18, italics:true, color:'555555' })], alignment: AlignmentType.CENTER, spacing:{ before:0, after:480, line:276, lineRule:'auto' } }));
+  for (const sec of (p.sections || [])) {
+    if (sec.heading) ch.push(new Paragraph({ children: [new TextRun({ text: sec.heading, font:'Calibri', size:22, bold:true, color:'000000' })], spacing:{ before:280, after:120, line:276, lineRule:'auto' } }));
+    for (const par of (sec.paragraphs || [])) ch.push(new Paragraph({ children: [new TextRun({ text: par, font:'Calibri', size:22, color:'000000' })], spacing:{ before:0, after:0, line:276, lineRule:'auto' }, indent:{ firstLine:709 } }));
+    ch.push(new Paragraph({ children: [new TextRun({ text:'', font:'Calibri', size:22 })], spacing:{ before:0, after:120, line:276 } }));
+  }
+  ch.push(new Paragraph({ children: [new TextRun({ text:'', font:'Calibri', size:22 })], spacing:{ before:480, after:0 } }));
+  ch.push(new Paragraph({ children: [new TextRun({ text: `Lisboa/São Paulo, ${p._dt||new Date().toLocaleDateString('pt-BR')}`, font:'Calibri', size:22, color:'000000' })], spacing:{ before:0, after:240, line:276 } }));
+  ch.push(new Paragraph({ children: [new TextRun({ text:'Departamento Jurídico — TribeMD', font:'Calibri', size:22, bold:true, color:'000000' })], spacing:{ before:0, after:0, line:276 } }));
+  const doc = new Document({ creator:'Renato Chiodaro', sections:[{ properties:{ page:{ margin:{ top:1417, bottom:1417, left:1701, right:1417 } } }, footers:{ default: mkFooter() }, children: ch }] });
+  return docx.Packer.toBlob(doc);
+}
+</script>
+</body>
+</html>
