@@ -1,5 +1,5 @@
 const { getStore } = require('@netlify/blobs');
-
+const SITE_ID = 'ef3bb316-0dc8-409d-b2d9-1f8210f5637b';
 const ADMIN_PASSWORD = 'Jur1$@ut0';
 const LABELS = {
   opiniao: 'Opinião jurídica',
@@ -33,7 +33,7 @@ exports.handler = async function(event) {
     return { statusCode: 204, headers, body: '' };
   }
 
-  const store = getStore('requests');
+  const store = getStore({ name: 'requests', siteID: SITE_ID, token: process.env.NETLIFY_TOKEN || '' });
 
   // PUBLIC: submit a new request
   if (action === 'submit') {
