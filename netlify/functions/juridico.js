@@ -33,7 +33,7 @@ exports.handler = async function(event) {
     return { statusCode: 204, headers, body: '' };
   }
 
-  const store = getStore({ name: 'requests', siteID: SITE_ID, token: process.env.NETLIFY_TOKEN || '' });
+  const store = getStore({ name: 'requests', siteID: process.env.NETLIFY_SITE_ID || 'ef3bb316-0dc8-409d-b2d9-1f8210f5637b' });
 
   // PUBLIC: submit a new request
   if (action === 'submit') {
