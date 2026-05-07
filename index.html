@@ -323,17 +323,15 @@ function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.
 let _requests = {};
 
 function buildSysClient(demand) {
-  const yr = new Date().getFullYear();
-  const base = 'Voce e um advogado brasileiro senior especialista em direito empresarial e corporativo. Elabore respostas juridicas completas e tecnicamente rigorosas. NUNCA invente leis ou precedentes.\n\nResposta EXCLUSIVAMENTE em JSON valido. Sem texto adicional.';
-  const s = {
-    opiniao: '\n{"document_title":"PARECER JURIDICO No 001/' + yr + '","sections":[{"heading":"EMENTA","paragraphs":["..."]},{"heading":"I - DA CONSULTA","paragraphs":["..."]},{"heading":"II - DA ANALISE JURIDICA","paragraphs":["...","..."]},{"heading":"III - DA CONCLUSAO","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}',
-    revisao: '\n{"document_title":"ANALISE JURIDICA DE DOCUMENTO","sections":[{"heading":"I - IDENTIFICACAO E OBJETO","paragraphs":["..."]},{"heading":"II - ANALISE GERAL","paragraphs":["..."]},{"heading":"III - RECOMENDACOES","paragraphs":["..."]}],"revised_content":"Texto revisado.","message_to_requester":"Prezado(a) [NOME],\\n\\n..."}',
-    elaboracao: '\n{"document_title":"Titulo adequado","sections":[{"heading":"Clausula","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}',
-    esclarecimento: '\n{"document_title":"ESCLARECIMENTO JURIDICO","sections":[{"heading":"I - DUVIDA APRESENTADA","paragraphs":["..."]},{"heading":"II - RESPOSTA","paragraphs":["...","..."]},{"heading":"III - FUNDAMENTOS NORMATIVOS","paragraphs":["..."]},{"heading":"IV - CONCLUSAO","paragraphs":["..."]}],"message_to_requester":"Prezado(a) [NOME],\\n\\n..."}'
+  const templates = {
+    opiniao: 'PARECER JURIDICO com secoes: EMENTA, I-DA CONSULTA, II-DA ANALISE JURIDICA, III-DA CONCLUSAO',
+    revisao: 'ANALISE JURIDICA DE DOCUMENTO com secoes: I-IDENTIFICACAO E OBJETO, II-ANALISE GERAL, III-RECOMENDACOES',
+    elaboracao: 'ELABORACAO DE DOCUMENTO completo com clausulas numeradas',
+    esclarecimento: 'ESCLARECIMENTO JURIDICO com secoes: I-DUVIDA APRESENTADA, II-RESPOSTA, III-FUNDAMENTOS NORMATIVOS, IV-CONCLUSAO'
   };
-  return base + (s[demand] || s.esclarecimento);
+  const tipo = templates[demand] || templates.esclarecimento;
+  return 'Voce e um advogado brasileiro senior. Elabore um ' + tipo + '.\n\nRetorne APENAS um objeto JSON valido com esta estrutura exata:\n{"document_title":"TITULO","sections":[{"heading":"NOME DA SECAO","paragraphs":["paragrafo 1","paragrafo 2"]}],"message_to_requester":"Prezado(a) NOME,\\n\\nTexto da mensagem."}\n\nNao use markdown. Nao use caracteres especiais no JSON. Apenas JSON puro.';
 }
-
 async function processRequest(id, btn) {
   btn.disabled = true; btn.textContent = '⏳ Processando…';
   clearErr('adminError');
