@@ -95,7 +95,7 @@ exports.handler = async function(event) {
       if (!resp.ok) return { statusCode: resp.status, headers: CORS, body: JSON.stringify({ error: (data.error && data.error.message) || 'Erro API' }) };
       const raw = data.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('');
       var parsed;
-      try { parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()); }
+      try { parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim()); }
       catch(e) { var m = raw.match(/\{[\s\S]*\}/); if (!m) throw new Error('JSON invalido'); parsed = JSON.parse(m[0]); }
       parsed._n = item.name; parsed._dt = item.date; parsed._dl = item.deadlineDisplay; parsed._d = item.demand;
       await store.setJSON(id, Object.assign({}, item, { status: 'processed', response: parsed, processedAt: new Date().toISOString() }));
